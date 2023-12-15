@@ -1,7 +1,7 @@
-import { Roboto } from "next/font/google";
+import { Rubik } from "next/font/google";
 import "./globals.css";
 
-const roboto = Roboto({
+const rubik = Rubik({
   weight: "400",
   subsets: ["latin"],
 });
@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} bg-[#f5f6fa] `}>{children}</body>
+      <body className={`${rubik.className} bg-[#f5f6fa] `}>{children}</body>
     </html>
   );
 }

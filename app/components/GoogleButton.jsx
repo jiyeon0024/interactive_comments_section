@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 function GoogleButton({ onClick }) {
   return (
     <button
+      type="submit"
       onClick={onClick}
       className=" relative border w-full flex justify-center  items-center border-gray-300  p-4  rounded text-gray-500"
     >
