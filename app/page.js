@@ -7,13 +7,22 @@ export default function Home() {
   const { loggedIn } = useAuthContext();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!loggedIn) {
-      router.push("/login");
-    } else {
-      router.push("/");
-    }
-  }, [router]);
+  if (!loggedIn) {
+    return router.replace("/login");
+  } else {
+    router.push("/");
+  }
+
+  // useEffect(async () => {
+  //   if (!loggedIn) {
+  //     router.push("/login");
+  //   } else {
+  //     router.push("/");
+  //   }
+  // }, [loggedIn]);
+
+  console.log(loggedIn);
+  console.log("sdfsdf");
 
   return <div className="">sdfsdf</div>;
 }
