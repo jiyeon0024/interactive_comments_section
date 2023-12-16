@@ -1,12 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "./context/AuthContext";
+
 export default function Home() {
-  const [user, setUser] = useState(true);
+  const { loggedIn } = useAuthContext();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!loggedIn) {
       router.push("/login");
     } else {
       router.push("/");
