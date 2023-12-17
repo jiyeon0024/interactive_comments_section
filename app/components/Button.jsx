@@ -5,7 +5,6 @@ function Button({ children, onClick }) {
     <button
       type="submit"
       className="bg-[#5457b6] w-full  text-white p-4 rounded"
-      onClick={onClick}
     >
       {children}
     </button>
