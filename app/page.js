@@ -1,17 +1,21 @@
 "use client";
-import { useAuthContext } from "./context/AuthContext";
-import { useRouter, useEffect } from "next/navigation";
+
+import { getComments } from "./api/coomentsApi";
+import { useQuery } from "react-query";
+import CommentsCard from "./components/CommentsCard";
+
 export default function Home() {
-  const { user, loggedIn } = useAuthContext();
-  const router = useRouter();
+  const { data } = useQuery({
+    queryFn: () => getComments(),
+    queryKey: ["comments"],
+  });
+  console.log(data);
 
-  // useEffect(() => {
-  // if (!loggedIn) {
-  //   router.replace("/login");
-  // }
-  // }, []);
-
-  console.log(loggedIn);
-  // console.log(user);
-  return <div className="">sdfds</div>;
+  return (
+    <div className=" mt-20 max-w-[50%] flex  flex-col justify-center gap-10  items-center m-auto">
+      {Object.values(data?.data.comments || {}).map((comments, index) => {
+        return <CommentsCard key={index} comments={comments} />;
+      })}
+    </div>
+  );
 }
