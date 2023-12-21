@@ -11,3 +11,13 @@ export const loginValidator = Yup.object().shape({
   //   "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
   // ),
 });
+
+export const commentValidator = Yup.object().shape({
+  content: Yup.string().min(0).required("Required"),
+});
+export const repliesValidator = Yup.object().shape({
+  content: Yup.string().min(0).required("Required"),
+});
+export const editValidator = Yup.object().shape({
+  content: Yup.string().min(0).required("Required"),
+});
