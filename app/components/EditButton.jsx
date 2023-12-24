@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 function EditButton({ onClick }) {
   const [hover, setHover] = useState(false);
 
@@ -14,7 +15,12 @@ function EditButton({ onClick }) {
           onClick={onClick}
           className="flex justify-center items-center gap-3"
         >
-          <img src="./images/icon-editHover.svg" alt="" />
+          <Image
+            src="./images/icon-editHover.svg"
+            width={10}
+            height={10}
+            alt=""
+          />
           <span className="font-bold text-[#c3c4ef]">Edit</span>
         </button>
       ) : (
@@ -23,7 +29,7 @@ function EditButton({ onClick }) {
           onClick={onClick}
           className="flex justify-center items-center gap-3"
         >
-          <img src="./images/icon-edit.svg" alt="" />
+          <Image src="./images/icon-edit.svg" alt="" width={10} height={10} />
           <span className="font-bold text-[#5457b6]">Edit</span>
         </button>
       )}

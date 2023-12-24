@@ -11,7 +11,7 @@ import DeleteModal from "./DeleteModal";
 import Updatebutton from "./Updatebutton";
 import { useFormik } from "formik";
 import { editValidator } from "../util/validationSchema";
-
+import Image from "next/image";
 function CommentsCard({ newArr, setNewArr, i, index }) {
   const { user } = useAuthContext();
   const username =
@@ -97,7 +97,13 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
             <div className="flex justify-between items-center gap-3">
               <div className="flex  items-center gap-3">
                 {i.user?.image?.png ? (
-                  <img src={i.user?.image?.png} alt="" className="w-10" />
+                  <Image
+                    src={i.user?.image?.png}
+                    alt=""
+                    className="w-10"
+                    width={100}
+                    height={100}
+                  />
                 ) : (
                   <div className="w-10  h-10 flex justify-center items-center bg-sky-500 p-5 rounded-full text-white font-bold">
                     {username}

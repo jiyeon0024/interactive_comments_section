@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import Image from "next/image";
 function DeleteButton({ onClick }) {
   const [hover, setHover] = useState(false);
   return (
@@ -13,7 +13,12 @@ function DeleteButton({ onClick }) {
           onClick={onClick}
           className="flex justify-center items-center gap-3"
         >
-          <img src="./images/icon-deleteHover.svg" alt="" />
+          <Image
+            width={10}
+            height={10}
+            src="./images/icon-deleteHover.svg"
+            alt=""
+          />
           <span className="font-bold text-[#ffb8bb]">Delete</span>
         </button>
       ) : (
@@ -21,7 +26,7 @@ function DeleteButton({ onClick }) {
           onClick={onClick}
           className="flex justify-center items-center gap-3"
         >
-          <img src="./images/icon-delete.svg" alt="" />
+          <Image width={10} height={10} src="./images/icon-delete.svg" alt="" />
           <span className="font-bold text-[#ed6468] ">Delete</span>
         </button>
       )}

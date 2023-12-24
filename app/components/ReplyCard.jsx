@@ -11,6 +11,7 @@ import { replyEditValidator } from "../util/validationSchema";
 import InputRepliesCard from "./InputRepliesCard";
 import Updatebutton from "./Updatebutton";
 import RepliesCommentsReply from "./RepliesCommentsReply";
+import Image from "next/image";
 function ReplyCard({ i, j, newArr, setNewArr }) {
   const [click, setClick] = useState(false);
   const { user } = useAuthContext();
@@ -149,7 +150,13 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
           <div className="flex justify-between items-center gap-3 w-full ">
             <div className="flex  justify-between items-center gap-3 ">
               {i.user?.image ? (
-                <img src={i.user.image.png} alt="" className="w-10" />
+                <Image
+                  src={i.user.image.png}
+                  alt=""
+                  className="w-10"
+                  width={100}
+                  height={100}
+                />
               ) : (
                 <p className="w-10  h-10 flex justify-center items-center bg-sky-500 p-5 rounded-full text-white font-bold">
                   {username}
