@@ -1,14 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 
 function DeleteButton({ onClick }) {
+  const [hover, setHover] = useState(false);
   return (
-    <button
+    <div
       onClick={onClick}
-      className="flex justify-center items-center gap-3"
+      onMouseMove={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
-      <img src="./images/icon-delete.svg" alt="" />
-      <span className="font-bold text-red-500">Delete</span>
-    </button>
+      {hover ? (
+        <button
+          onClick={onClick}
+          className="flex justify-center items-center gap-3"
+        >
+          <img src="./images/icon-deleteHover.svg" alt="" />
+          <span className="font-bold text-[#ffb8bb]">Delete</span>
+        </button>
+      ) : (
+        <button
+          onClick={onClick}
+          className="flex justify-center items-center gap-3"
+        >
+          <img src="./images/icon-delete.svg" alt="" />
+          <span className="font-bold text-[#ed6468] ">Delete</span>
+        </button>
+      )}
+    </div>
   );
 }
 

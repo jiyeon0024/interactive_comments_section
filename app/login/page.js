@@ -59,7 +59,7 @@ function login() {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className=" flex  flex-col gap-8 bg-white w-[750px] h-[700px] max-w-[100%] rounded m-auto mt-20 p-20 "
+      className=" flex  flex-col gap-8 bg-white  w-[90%] lg:w-[750px] h-[700px] max-w-[100%] rounded m-auto mt-20  p-6 lg:p-20 "
     >
       <h1 className="font-extrabold text-4xl">Login</h1>
       {isLoading ? (
@@ -80,7 +80,7 @@ function login() {
               className="outline-none border border-gray-300 rounded p-3 w-full"
             />
             {formik.touched.email && formik.errors.email ? (
-              <p className="text-red-500">{formik.errors.email}</p>
+              <p className="text-[#ed6468]">{formik.errors.email}</p>
             ) : null}
           </div>
           <div className="flex flex-col items-start justify-center pb-5">
@@ -97,7 +97,7 @@ function login() {
               className="outline-none border border-gray-300 rounded p-3 w-full"
             />
             {formik.touched.password && formik.errors.password ? (
-              <p className="text-red-500">{formik.errors.password}</p>
+              <p className="text-[#ed6468]">{formik.errors.password}</p>
             ) : null}
           </div>
           <div>

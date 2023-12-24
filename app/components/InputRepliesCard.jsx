@@ -1,72 +1,65 @@
 import { useFormik } from "formik";
 import React, { useEffect, useState, useTransition } from "react";
-import SendButton from "./SendButton";
-import { commentValidator } from "../util/validationSchema";
-import { repliesValidator } from "../util/validationSchema";
+
 import { useAuthContext } from "../context/AuthContext";
-import { postComments } from "../api/commentsApi";
+import { repliesEditValidator } from "../util/validationSchema";
 import ReplyButton2 from "./ReplyButton2";
-function InputReplyCard({ newArr, setNewArr, id, i, setClick, replying }) {
+
+function InputRepliesCard({ i, newArr, setNewArr, setClickReplicesCard }) {
   const { user } = useAuthContext();
-  const username = user.email?.slice(0, 1).toUpperCase();
+  const username = user?.email?.slice(0, 1).toUpperCase();
   // const username = "J";
+
   const [value, setValue] = useState("");
   const formik = useFormik({
     initialValues: {
       id: "",
+
       content: i.user?.username + "@,",
       createdAt: "Just now",
       replyingTo: "",
       score: 0,
       user: {},
     },
-    validationSchema: repliesValidator,
+    // validationSchema: repliesEditValidator,
     onSubmit: (values) => {
-      if (values !== "") {
-        // setValue(values);
-      }
-      // let newReply = [...target.replies, values];
-
-      // const newArrCopy = newArr.map((comment) => {
-      //   newReply.map((i) => {
-      //     // console.log(comment);
-      //     // console.log(i);
-      //     if (comment.user.username === i.replyingTo) {
-      //       return {
-      //         ...comment,
-      //         replies: [...comment.replies, values.content],
-      //       };
-      //     }
-      //     return comment;
-      //   });
-      // });
+      //   console.log(values);
     },
   });
 
-  //comment card
   const handleReplyButton = (val) => {
-    // console.log(val.user.username);
-    // console.log(formik.values.replyingTo);
-    // alert("same");
-    const arr = newArr.map((i) => {
+    const updatedArr = newArr.map((comment) => {
       if (
-        val.user.username === i.user.username &&
-        formik.values.content !== ""
+        typeof comment.replies !== "undefined" &&
+        comment.replies !== null &&
+        comment.replies.length > 0
       ) {
-        // return i.replies.push({ content: formik.values.content });
-        return {
-          ...i,
-          replies: [...i.replies, formik.values],
-        };
+        const updatedReplies = comment.replies.map((reply) => {
+          if (reply.content === val.content) {
+            // 특정 댓글에 대한 처리
+            return {
+              ...reply,
+              reply: [...(reply.reply || []), formik.values],
+            };
+          }
+          // 특정 댓글이 아닌 경우 그대로 반환
+          return reply;
+        });
+
+        // 특정 댓글이 있는 경우 해당 댓글의 replies를 업데이트
+        return { ...comment, replies: updatedReplies };
       }
-      return i;
+
+      // replies가 없는 경우 그대로 반환
+      return comment;
     });
 
-    setNewArr(arr);
-    setClick(false);
+    // 업데이트된 댓글 목록을 state에 설정
+    setNewArr(updatedArr);
+    setClickReplicesCard(false);
   };
+  console.log(newArr);
 
-  // console.log(newArr);
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -96,4 +89,4 @@ function InputReplyCard({ newArr, setNewArr, id, i, setClick, replying }) {
   );
 }
 
-export default InputReplyCard;
+export default InputRepliesCard;

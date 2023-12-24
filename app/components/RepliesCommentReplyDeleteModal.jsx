@@ -1,7 +1,11 @@
 import React from "react";
 import NoCancelBtn from "./NoCancelBtn";
 import YesDeleteBtn from "./YesDeleteBtn";
-function DeleteModal({ handleDeleteModal, removeButton, i }) {
+function RepliesCommentReplyDeleteModal({
+  handleDeleteModal,
+  removeReplyButton,
+  i,
+}) {
   return (
     <div className=" fixed top-0 left-0  w-full h-full bg-[#00000099]  flex justify-start items-center">
       <div className="absolute bg-white w-[400px] max-w-[90%]  p-6 rounded-xl left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] mt-20 flex flex-col justify-center  items-center m-auto">
@@ -15,7 +19,7 @@ function DeleteModal({ handleDeleteModal, removeButton, i }) {
           </p>
           <div className="flex gap-3 pb-3 w-full ">
             <NoCancelBtn onClick={handleDeleteModal} />
-            <YesDeleteBtn removeButton={removeButton} i={i} />
+            <YesDeleteBtn removeReplyButton={removeReplyButton} i={i} />
           </div>
         </div>
       </div>
@@ -23,4 +27,4 @@ function DeleteModal({ handleDeleteModal, removeButton, i }) {
   );
 }
 
-export default DeleteModal;
+export default RepliesCommentReplyDeleteModal;

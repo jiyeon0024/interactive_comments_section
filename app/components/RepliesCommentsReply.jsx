@@ -1,32 +1,27 @@
-import React, { useState, useEffect } from "react";
-import VoteButton from "./VoteButton";
-import ReplyButton from "./ReplyButton";
+import React from "react";
+import { useState, useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
-import InputReplyCard from "./InputRepliesCard";
 import DeleteButton from "./DeleteButton";
 import EditButton from "./EditButton";
-import ReplyDeleteModal from "./ReplyDeleteModal";
 import { useFormik } from "formik";
-import { replyEditValidator } from "../util/validationSchema";
-import InputRepliesCard from "./InputRepliesCard";
 import Updatebutton from "./Updatebutton";
-import RepliesCommentsReply from "./RepliesCommentsReply";
-function ReplyCard({ i, j, newArr, setNewArr }) {
-  const [click, setClick] = useState(false);
+import RepliesCommentReplyDeleteModal from "./RepliesCommentReplyDeleteModal";
+
+function RepliesCommentsReply({ i, index, newArr, setNewArr }) {
   const { user } = useAuthContext();
-  const [deleteModal, setDeleteModal] = useState(false);
+  const username = user && user.email?.slice(0, 1).toUpperCase();
+  const userId = user && user.email ? user.email.slice(0, 7) : "";
   const [editInput, setEditInput] = useState(false);
   const [closeEdit, setCloseEdit] = useState(false);
   const [clickRepliresCard, setClickReplicesCard] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [buttonValue, setButtonValue] = useState("");
-  const username = user && user.email?.slice(0, 1).toUpperCase();
-  const userId = user && user.email ? user.email.slice(0, 7) : "";
 
   const formik = useFormik({
     initialValues: {
       content: i?.content,
     },
-    validationSchema: replyEditValidator,
+    // validationSchema: replyEditValidator,
     onSubmit: (values) => {},
   });
 
@@ -38,6 +33,42 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
     }
   };
 
+  const removeReplyButton = (val) => {
+    let updatedArr = newArr.map((comment) => {
+      if (
+        comment.replies &&
+        comment.replies.length > 0 &&
+        comment.replies.some((reply) => reply.reply && reply.reply.length > 0)
+      ) {
+        // 조건을 만족하는 경우에만 해당 comment를 반환
+        let updatedReplies = comment.replies.map((reply) => {
+          if (reply.reply && reply.reply.length > 0) {
+            // reply가 비어 있지 않은 경우에만 처리
+            let filteredReply = reply.reply.filter(
+              (item) => item.content !== val.content
+            );
+            return { ...reply, reply: [...filteredReply] }; // 새로운 배열로 복사
+          } else {
+            return reply;
+          }
+        });
+
+        return { ...comment, replies: updatedReplies };
+      } else {
+        // 조건을 만족하지 않는 경우에는 기존 comment를 그대로 반환
+        return comment;
+      }
+    });
+
+    // 새로운 배열을 적용
+    setNewArr(updatedArr);
+
+    // Modal 닫기
+    setDeleteModal(false);
+
+    console.log(updatedArr);
+  };
+
   const editButton = (val) => {
     setButtonValue(val.content);
 
@@ -45,59 +76,47 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
     setCloseEdit(false);
   };
 
-  //comment replies update button
   const updateButton = () => {
+    console.log(formik.values);
+    console.log(newArr);
+
     let arr = newArr.map((i) => {
-      let reply = i.replies.map((j) => {
-        if (j.content === buttonValue) {
-          return { ...j, content: formik.values.content };
-        }
-        return j;
-      });
+      if (
+        i.replies !== null &&
+        typeof i.replies !== "undefined" &&
+        i.replies.length > 0
+      ) {
+        let repliesArr = i.replies.map((replies) => {
+          if (
+            replies.reply !== null &&
+            typeof replies.reply !== "undefined" &&
+            replies.reply.length > 0
+          ) {
+            let replyArr = replies.reply.map((reply) => {
+              if (reply.content === buttonValue) {
+                return { reply, content: formik.values.content };
+              } else {
+                return reply;
+              }
+            });
+            return { ...replies, reply: replyArr };
+          } else {
+            return replies;
+          }
+        });
 
-      return { ...i, replies: reply };
+        return { ...i, replies: [...repliesArr] };
+      } else {
+        return i;
+      }
     });
-
     setNewArr(arr);
+    console.log(arr);
     setCloseEdit(true);
   };
 
-  const replyRemoveButton = (val) => {
-    // console.log(newArr);
-
-    const updatedArr = newArr.map((comment) => {
-      const updatedReplies = comment.replies.filter(
-        (reply) => reply.content !== val.content
-      );
-
-      return {
-        ...comment,
-        replies: updatedReplies,
-      };
-    });
-
-    setNewArr(updatedArr);
-    // console.log(reply);
-  };
-
-  const handleClick = () => {
-    if (click) {
-      setClick(false);
-    } else {
-      setClick(true);
-    }
-  };
-
-  const handleRepliesCard = () => {
-    if (clickRepliresCard) {
-      setClickReplicesCard(false);
-    } else {
-      setClickReplicesCard(true);
-    }
-  };
-
   const [vote, setVote] = useState(0);
-  const localStorageKey = `replyVote${j}`;
+  const localStorageKey = `replyVote${index}`;
 
   const upVote = () => {
     setVote((prevVote) => {
@@ -146,36 +165,24 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
         <div className="flex flex-col gap-3 w-full">
           <div className="flex justify-between items-center gap-3 w-full ">
             <div className="flex  justify-between items-center gap-3 ">
-              {i.user?.image ? (
-                <img src={i.user.image.png} alt="" className="w-10" />
-              ) : (
-                <p className="w-10  h-10 flex justify-center items-center bg-sky-500 p-5 rounded-full text-white font-bold">
-                  {username}
-                </p>
-              )}
-              {i.user.username ? (
-                <p className="font-bold"> {i.user.username}</p>
-              ) : (
-                <p className="font-bold"> {userId}</p>
-              )}
+              <p className="w-10  h-10 flex justify-center items-center bg-sky-500 p-5 rounded-full text-white font-bold">
+                {username}
+              </p>
+
+              <p className="font-bold"> {userId}</p>
+
               <p className="text-gray-400 font-semibold">{i.createdAt}</p>
             </div>
             <div className=" hidden sm:flex gap-3">
-              {i.id === 1 || i.id === 2 || i.id === 3 || i.id === 4 ? (
-                <div>
-                  <ReplyButton onClick={() => handleRepliesCard()} />
-                </div>
-              ) : (
-                <div className="sm:flex gap-3 hidden  ">
-                  <DeleteButton
-                    onClick={() => {
-                      //   removeButton(i);
-                      handleDeleteModal();
-                    }}
-                  />
-                  <EditButton onClick={() => editButton(i)} />
-                </div>
-              )}
+              <div className="sm:flex gap-3 hidden  ">
+                <DeleteButton
+                  onClick={() => {
+                    //   removeButton(i);
+                    handleDeleteModal();
+                  }}
+                />
+                <EditButton onClick={() => editButton(i)} />
+              </div>
             </div>
           </div>
 
@@ -242,41 +249,15 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
           </div>
         </div>
         {deleteModal ? (
-          <ReplyDeleteModal
+          <RepliesCommentReplyDeleteModal
             i={i}
             handleDeleteModal={handleDeleteModal}
-            replyRemoveButton={replyRemoveButton}
+            removeReplyButton={removeReplyButton}
           />
         ) : null}
       </div>
-      {i.reply !== null && typeof i.reply !== "undefined"
-        ? i.reply.map((i, index) => {
-            return (
-              // <<div className="bg-green-100" key={index}>
-              //   {i.content}
-              // </div>
-
-              <RepliesCommentsReply
-                i={i}
-                index={index}
-                key={i + index}
-                newArr={newArr}
-                setNewArr={setNewArr}
-              />
-            );
-          })
-        : null}
-      {click ? <InputReplyCard /> : null}
-      {clickRepliresCard ? (
-        <InputRepliesCard
-          i={i}
-          newArr={newArr}
-          setNewArr={setNewArr}
-          setClickReplicesCard={setClickReplicesCard}
-        />
-      ) : null}
     </>
   );
 }
 
-export default ReplyCard;
+export default RepliesCommentsReply;

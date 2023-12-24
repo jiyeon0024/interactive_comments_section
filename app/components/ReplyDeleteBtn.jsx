@@ -1,10 +1,10 @@
 import React from "react";
 
-function YesDeleteBtn({ removeReplyButton, i }) {
+function ReplyDeleteBtn({ i, replyRemoveButton }) {
   return (
     <button
       onClick={() => {
-        removeReplyButton(i);
+        replyRemoveButton(i);
       }}
       className="bg-[#ed6468] px-6 py-3 rounded-lg text-white w-full "
     >
@@ -13,4 +13,4 @@ function YesDeleteBtn({ removeReplyButton, i }) {
   );
 }
 
-export default YesDeleteBtn;
+export default ReplyDeleteBtn;

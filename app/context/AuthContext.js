@@ -18,11 +18,11 @@ export const AuthContextProvider = ({ children }) => {
   });
   const router = useRouter();
 
-  useEffect(() => {
-    if (!loggedIn) {
-      return router.push("/login");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!loggedIn) {
+  //     return router.push("/login");
+  //   }
+  // }, []);
 
   return (
     <AuthContext.Provider value={{ loggedIn, setLoggedIn, user, setUser }}>

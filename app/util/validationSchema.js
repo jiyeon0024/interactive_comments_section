@@ -21,3 +21,9 @@ export const repliesValidator = Yup.object().shape({
 export const editValidator = Yup.object().shape({
   content: Yup.string().min(0).required("Required"),
 });
+export const replyEditValidator = Yup.object().shape({
+  content: Yup.string().min(0).required("Required"),
+});
+export const repliesEditValidator = Yup.object().shape({
+  replies2: Yup.string().min(0).required("Required"),
+});
