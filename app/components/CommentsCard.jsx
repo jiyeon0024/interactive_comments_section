@@ -11,7 +11,6 @@ import DeleteModal from "./DeleteModal";
 import Updatebutton from "./Updatebutton";
 import { useFormik } from "formik";
 import { editValidator } from "../util/validationSchema";
-import { comment } from "postcss";
 
 function CommentsCard({ newArr, setNewArr, i, index }) {
   const { user } = useAuthContext();
@@ -64,6 +63,7 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
   const removeButton = (val) => {
     let filtered = newArr.filter((i) => val !== i);
     setNewArr(filtered);
+    setDeleteModal(false);
   };
 
   const editButton = (val) => {

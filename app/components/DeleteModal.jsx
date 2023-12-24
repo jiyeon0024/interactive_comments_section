@@ -15,7 +15,16 @@ function DeleteModal({ handleDeleteModal, removeButton, i }) {
           </p>
           <div className="flex gap-3 pb-3 w-full ">
             <NoCancelBtn onClick={handleDeleteModal} />
-            <YesDeleteBtn removeButton={removeButton} i={i} />
+
+            <button
+              onClick={() => {
+                removeButton(i);
+              }}
+              className="bg-[#ed6468] px-6 py-3 rounded-lg text-white w-full "
+            >
+              YES, DELETE
+            </button>
+            {/* <YesDeleteBtn removeButton={removeButton} i={i} /> */}
           </div>
         </div>
       </div>

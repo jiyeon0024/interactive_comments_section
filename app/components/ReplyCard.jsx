@@ -77,6 +77,8 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
     });
 
     setNewArr(updatedArr);
+    setDeleteModal(false);
+
     // console.log(reply);
   };
 
