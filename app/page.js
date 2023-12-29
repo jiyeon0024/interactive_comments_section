@@ -1,96 +1,118 @@
 "use client";
-import axios from "axios";
 
+import React, { useState, useEffect } from "react";
+import Button from "../components/Button";
+import GoogleButton from "../components/GoogleButton";
+import FacebookButton from "../components/FacebookButton";
+import { loginValidator } from "../util/validationSchema";
 import { useFormik } from "formik";
-import { commentValidator } from "../util/validationSchema";
-
-import { getComments, postComments } from "../api/commentsApi";
+import { getUerInfo } from "../api/userApi";
 import { useQuery } from "react-query";
-import CommentsCard from "../components/CommentsCard";
 import { useAuthContext } from "../context/AuthContext";
-import InputReplyCard from "../components/InputReplyCard";
-import SendButton from "../components/SendButton";
 import { useRouter } from "next/navigation";
+import Loading from "../components/Loading";
+function Login() {
+  const { loggedIn, setLoggedIn, user, setUser } = useAuthContext();
 
-import { useEffect, useState } from "react";
-import { useCommentsStore } from "@/stores/commentsStore";
-
-function Home() {
-  const { loggedIn, user } = useAuthContext();
   const router = useRouter();
-  const [comments, addComment] = useCommentsStore((state) => [
-    state.comments,
-    state.addComment,
-  ]);
-
-  if (!loggedIn) {
-    return router.push("/login");
-  }
-
-  const username =
-    user && user.email ? user.email.slice(0, 1).toUpperCase() : "";
-  // const username = "J";
-
-  const [newArr, setNewArr] = useState([]);
-
+  const { data, isLoading } = useQuery({
+    queryFn: () => getUerInfo(),
+    queryKey: ["users"],
+  });
   const formik = useFormik({
     initialValues: {
-      id: Date.now(),
-      content: "",
-      createdAt: "Just now",
-      score: 0,
-      user: {},
-      replies: [],
+      email: "",
+      password: "",
     },
-    validationSchema: commentValidator,
-    onSubmit: (values, { resetForm }) => {
-      if (values !== null) {
-      }
-      resetForm();
+    validationSchema: loginValidator,
+    onSubmit: (values) => {
+      data.data.forEach((i) => {
+        if (values.email === i.email && values.password === i.login.password) {
+          setUser(values);
+          setLoggedIn(true);
+          localStorage.setItem("localUser", JSON.stringify(values));
+        }
+      });
     },
   });
 
+  console.log(data);
+  //   console.log(user);
+  //   console.log(loggedIn);
+
+  useEffect(() => {
+    if (loggedIn) {
+      localStorage.setItem("loggedIn", loggedIn);
+      //   const localUser = JSON.parse(localStorage.getItem("localUser"));
+      //   setUser(localUser);
+      router.push("/posts");
+    }
+  }, [loggedIn, router]);
+
+  //   useEffect(() => {
+  //     const localLoggedIn = localStorage.getItem("loggedIn");
+  //     if (localLoggedIn) {
+  //       return setLoggedIn(true);
+  //     }
+  //   }, []);
+
   return (
-    <>
-      <div className=" mt-20 xl:max-w-[40%] w-[80%] flex  flex-col   items-center m-auto gap-5 ">
-        {comments?.map((comment, index) => {
-          return <CommentsCard key={index} comment={comment} index={index} />;
-        })}
+    <form
+      onSubmit={formik.handleSubmit}
+      className=" flex  flex-col gap-8 bg-white  w-[90%] lg:w-[750px] h-[700px] max-w-[100%] rounded m-auto mt-20  p-6 lg:p-20 "
+    >
+      <h1 className="font-extrabold text-4xl">Login</h1>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="flex  flex-col gap-5">
+          <div className="flex flex-col items-start justify-center">
+            <label htmlFor="email" className="font-bold text-gray-500 pb-2">
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              onChange={formik.handleChange}
+              value={formik.values.email}
+              placeholder="Enter email address"
+              className="outline-none border border-gray-300 rounded p-3 w-full"
+            />
+            {formik.touched.email && formik.errors.email ? (
+              <p className="text-[#ed6468]">{formik.errors.email}</p>
+            ) : null}
+          </div>
+          <div className="flex flex-col items-start justify-center pb-5">
+            <label htmlFor="password" className="font-bold text-gray-500 pb-2">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              onChange={formik.handleChange}
+              value={formik.values.password}
+              placeholder="Enter password"
+              className="outline-none border border-gray-300 rounded p-3 w-full"
+            />
+            {formik.touched.password && formik.errors.password ? (
+              <p className="text-[#ed6468]">{formik.errors.password}</p>
+            ) : null}
+          </div>
+          <div>
+            <Button>Login</Button>
 
-        {/* <InputReplyCard userName={userName} data={data} /> */}
-      </div>
-      <div className="xl:max-w-[40%] w-[90%] flex justify-center  m-auto">
-        <form
-          onSubmit={formik.handleSubmit}
-          className="   h-36 mt-5 mb-20 bg-white rounded-lg  flex justify-center items-start gap-3 p-5 w-full  "
-        >
-          <p className="w-10  h-10 flex justify-center items-center bg-sky-500 p-5 rounded-full text-white font-bold">
-            {username}
-          </p>
-
-          <textarea
-            id="content"
-            name="content"
-            typeof="text"
-            onChange={formik.handleChange}
-            value={formik.values.content}
-            placeholder="Add a comment"
-            className={
-              formik.errors.content
-                ? "border-2 border-[#ed6468] rounded-lg  focus:outline-none resize-none w-full h-28 py-2 px-3 font-medium placeholder-gray-700 "
-                : " rounded-lg border-2 border-gray-200  resize-none w-full h-28 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:border-[#5457b6]"
-            }
-            // required
-          ></textarea>
-          <SendButton
-            onClick={() => {
-              addComment(formik.values);
-            }}
-          />
-        </form>
-      </div>
-    </>
+            <p className="text-center pt-3 pb-3 text-gray-500 font-bold">or</p>
+            <div className=" flex flex-col gap-5">
+              <GoogleButton />
+              <FacebookButton />
+            </div>
+          </div>
+        </div>
+      )}
+    </form>
   );
 }
 
-export default Home;
+export default Login;
