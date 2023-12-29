@@ -2,44 +2,40 @@
 import axios from "axios";
 
 import { useFormik } from "formik";
-import { commentValidator } from "./util/validationSchema";
+import { commentValidator } from "../util/validationSchema";
 
-import { getComments, postComments } from "./api/commentsApi";
+import { getComments, postComments } from "../api/commentsApi";
 import { useQuery } from "react-query";
-import CommentsCard from "./components/CommentsCard";
-import { useAuthContext } from "./context/AuthContext";
-import InputReplyCard from "./components/InputReplyCard";
-import SendButton from "./components/SendButton";
+import CommentsCard from "../components/CommentsCard";
+import { useAuthContext } from "../context/AuthContext";
+import InputReplyCard from "../components/InputReplyCard";
+import SendButton from "../components/SendButton";
 import { useRouter } from "next/navigation";
 
 import { useEffect, useState } from "react";
+import { useCommentsStore } from "@/stores/commentsStore";
 
 function Home() {
   const { loggedIn, user } = useAuthContext();
   const router = useRouter();
+  const [comments, addComment] = useCommentsStore((state) => [
+    state.comments,
+    state.addComment,
+  ]);
 
   if (!loggedIn) {
     return router.push("/login");
   }
 
-  // const { data, isLoading } = useQuery({
-  //   queryFn: async () => await getComments(),
-  //   queryKey: ["comments"],
-  // });
-  // console.log(data);
-
   const username =
     user && user.email ? user.email.slice(0, 1).toUpperCase() : "";
   // const username = "J";
-  const [comment, setComment] = useState("");
-  const [newArr, setNewArr] = useState(() => {
-    const localComments = localStorage.getItem("comments");
-    return localComments ? JSON.parse(localComments) : [];
-  });
+
+  const [newArr, setNewArr] = useState([]);
 
   const formik = useFormik({
     initialValues: {
-      id: "",
+      id: Date.now(),
       content: "",
       createdAt: "Just now",
       score: 0,
@@ -48,53 +44,18 @@ function Home() {
     },
     validationSchema: commentValidator,
     onSubmit: (values, { resetForm }) => {
-      console.log(values);
       if (values !== null) {
-        // postComments(values);
-        setComment(values);
-        setNewArr([...newArr, values]);
-        resetForm();
-
-        localStorage.setItem("comments", JSON.stringify([values, ...newArr]));
       }
+      resetForm();
     },
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("./data.json");
-        const val = await res.json();
-        setNewArr(val.comments);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const localComment = JSON.parse(localStorage.getItem("comments"));
-    console.log("localComment:", localComment);
-
-    if (localComment !== null) {
-      setNewArr(localComment);
-    }
-    fetchData();
-  }, []);
-
   return (
     <>
-      <div className=" mt-20 xl:max-w-[40%] w-[80%] flex  flex-col   items-center m-auto  ">
-        {newArr &&
-          newArr.map((i, index) => {
-            return (
-              <CommentsCard
-                key={index}
-                i={i}
-                index={index}
-                newArr={newArr}
-                setNewArr={setNewArr}
-              />
-            );
-          })}
+      <div className=" mt-20 xl:max-w-[40%] w-[80%] flex  flex-col   items-center m-auto gap-5 ">
+        {comments?.map((comment, index) => {
+          return <CommentsCard key={index} comment={comment} index={index} />;
+        })}
 
         {/* <InputReplyCard userName={userName} data={data} /> */}
       </div>
@@ -121,7 +82,11 @@ function Home() {
             }
             // required
           ></textarea>
-          <SendButton />
+          <SendButton
+            onClick={() => {
+              addComment(formik.values);
+            }}
+          />
         </form>
       </div>
     </>

@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Button from "../components/Button";
-import GoogleButton from "../components/GoogleButton";
-import FacebookButton from "../components/FacebookButton";
-import { loginValidator } from "../util/validationSchema";
+import Button from "../../components/Button";
+import GoogleButton from "../../components/GoogleButton";
+import FacebookButton from "../../components/FacebookButton";
+import { loginValidator } from "../../util/validationSchema";
 import { useFormik } from "formik";
-import { getUerInfo } from "../api/userApi";
+import { getUerInfo } from "../../api/userApi";
 import { useQuery } from "react-query";
-import { useAuthContext } from "../context/AuthContext";
+import { useAuthContext } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
-import Loading from "../components/Loading";
-function login() {
+import Loading from "../../components/Loading";
+function Login() {
   const { loggedIn, setLoggedIn, user, setUser } = useAuthContext();
 
   const router = useRouter();
@@ -47,7 +47,7 @@ function login() {
       //   setUser(localUser);
       router.push("/");
     }
-  }, [loggedIn]);
+  }, [loggedIn, router]);
 
   //   useEffect(() => {
   //     const localLoggedIn = localStorage.getItem("loggedIn");
@@ -115,4 +115,4 @@ function login() {
   );
 }
 
-export default login;
+export default Login;

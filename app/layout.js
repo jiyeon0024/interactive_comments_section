@@ -3,8 +3,8 @@
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { AuthContextProvider } from "./context/AuthContext";
-import { metadata } from "./util/metadata";
+import { AuthContextProvider } from "../context/AuthContext";
+import { metadata } from "../util/metadata";
 
 const rubik = Rubik({
   weight: "400",

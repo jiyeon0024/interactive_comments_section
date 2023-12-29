@@ -1,3 +1,5 @@
+"use client";
+
 import { useFormik } from "formik";
 import React, { useEffect, useState, useTransition } from "react";
 import SendButton from "./SendButton";
@@ -6,15 +8,27 @@ import { repliesValidator } from "../util/validationSchema";
 import { useAuthContext } from "../context/AuthContext";
 import { postComments } from "../api/commentsApi";
 import ReplyButton2 from "./ReplyButton2";
-function InputReplyCard({ newArr, setNewArr, id, i, setClick, replying }) {
+import { useCommentsStore } from "@/stores/commentsStore";
+
+function InputReplyCard({
+  newArr,
+  setNewArr,
+  id,
+  i,
+  setClick,
+  replying,
+  comment,
+}) {
   const { user } = useAuthContext();
+  const [addReply] = useCommentsStore((state) => [state.addReply]);
+
   const username = user.email?.slice(0, 1).toUpperCase();
   // const username = "J";
   const [value, setValue] = useState("");
   const formik = useFormik({
     initialValues: {
-      id: "",
-      content: i.user?.username + "@,",
+      id: Date.now(),
+      content: comment.user?.username + "@,",
       createdAt: "Just now",
       replyingTo: "",
       score: 0,
@@ -40,6 +54,8 @@ function InputReplyCard({ newArr, setNewArr, id, i, setClick, replying }) {
       //     return comment;
       //   });
       // });
+      addReply(values, id);
+      setClick(false);
     },
   });
 
@@ -48,25 +64,25 @@ function InputReplyCard({ newArr, setNewArr, id, i, setClick, replying }) {
     // console.log(val.user.username);
     // console.log(formik.values.replyingTo);
     // alert("same");
-    const arr = newArr.map((i) => {
-      if (
-        val.user.username === i.user.username &&
-        formik.values.content !== ""
-      ) {
-        // return i.replies.push({ content: formik.values.content });
-        return {
-          ...i,
-          replies: [...i.replies, formik.values],
-        };
-      }
-      return i;
-    });
-
-    setNewArr(arr);
-    setClick(false);
+    //   const arr = newArr.map((i) => {
+    //     if (
+    //       val.user.username === i.user.username &&
+    //       formik.values.content !== ""
+    //     ) {
+    //       // return i.replies.push({ content: formik.values.content });
+    //       return {
+    //         ...i,
+    //         replies: [...i.replies, formik.values],
+    //       };
+    //     }
+    //     return i;
+    //   }
+    // );
+    // setNewArr(arr);
+    // setClick(false);
+    addReply(formik.values);
   };
 
-  // console.log(newArr);
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -91,7 +107,7 @@ function InputReplyCard({ newArr, setNewArr, id, i, setClick, replying }) {
         // required
       ></textarea>
 
-      <ReplyButton2 onClick={() => handleReplyButton(i)} />
+      <ReplyButton2 onClick={() => handleReplyButton(comment)} />
     </form>
   );
 }

@@ -4,16 +4,20 @@ import React, { useEffect, useState, useTransition } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import { repliesEditValidator } from "../util/validationSchema";
 import ReplyButton2 from "./ReplyButton2";
+import { useCommentsStore } from "@/stores/commentsStore";
 
-function InputRepliesCard({ i, newArr, setNewArr, setClickReplicesCard }) {
+function InputRepliesCard({ i, setClickReplicesCard, comment }) {
   const { user } = useAuthContext();
+  const [addReply, comments] = useCommentsStore((state) => [
+    state.addReply,
+    state.comments,
+  ]);
   const username = user?.email?.slice(0, 1).toUpperCase();
   // const username = "J";
 
-  const [value, setValue] = useState("");
   const formik = useFormik({
     initialValues: {
-      id: "",
+      id: Date.now(),
 
       content: i.user?.username + "@,",
       createdAt: "Just now",
@@ -24,42 +28,43 @@ function InputRepliesCard({ i, newArr, setNewArr, setClickReplicesCard }) {
     // validationSchema: repliesEditValidator,
     onSubmit: (values) => {
       //   console.log(values);
+      addReply(values, comment.id);
     },
   });
 
   const handleReplyButton = (val) => {
-    const updatedArr = newArr.map((comment) => {
-      if (
-        typeof comment.replies !== "undefined" &&
-        comment.replies !== null &&
-        comment.replies.length > 0
-      ) {
-        const updatedReplies = comment.replies.map((reply) => {
-          if (reply.content === val.content) {
-            // 특정 댓글에 대한 처리
-            return {
-              ...reply,
-              reply: [...(reply.reply || []), formik.values],
-            };
-          }
-          // 특정 댓글이 아닌 경우 그대로 반환
-          return reply;
-        });
+    // const updatedArr = newArr.map((comment) => {
+    //   if (
+    //     typeof comment.replies !== "undefined" &&
+    //     comment.replies !== null &&
+    //     comment.replies.length > 0
+    //   ) {
+    //     const updatedReplies = comment.replies.map((reply) => {
+    //       if (reply.content === val.content) {
+    //         // 특정 댓글에 대한 처리
+    //         return {
+    //           ...reply,
+    //           reply: [...(reply.reply || []), formik.values],
+    //         };
+    //       }
+    //       // 특정 댓글이 아닌 경우 그대로 반환
+    //       return reply;
+    //     });
+    //     // 특정 댓글이 있는 경우 해당 댓글의 replies를 업데이트
+    //     return { ...comment, replies: updatedReplies };
+    //   }
+    //   // replies가 없는 경우 그대로 반환
+    //   return comment;
+    // });
+    // // 업데이트된 댓글 목록을 state에 설정
+    // setNewArr(updatedArr);
+    // setClickReplicesCard(false);
 
-        // 특정 댓글이 있는 경우 해당 댓글의 replies를 업데이트
-        return { ...comment, replies: updatedReplies };
-      }
-
-      // replies가 없는 경우 그대로 반환
-      return comment;
-    });
-
-    // 업데이트된 댓글 목록을 state에 설정
-    setNewArr(updatedArr);
+    addReply(formik.values, comment.id);
     setClickReplicesCard(false);
   };
-  console.log(newArr);
 
+  console.log(comments);
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -84,7 +89,11 @@ function InputRepliesCard({ i, newArr, setNewArr, setClickReplicesCard }) {
         // required
       ></textarea>
 
-      <ReplyButton2 onClick={() => handleReplyButton(i)} />
+      <ReplyButton2
+        onClick={() => {
+          handleReplyButton(comment);
+        }}
+      />
     </form>
   );
 }

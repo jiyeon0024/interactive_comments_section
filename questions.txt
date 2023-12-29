@@ -1,0 +1,20 @@
+1. 
+attempted to store the data in the useState after fetching it with React Query, but encountered a failure."
+ex)	const {data} = useQuery({})
+	const [newArr, setNewArr] = useState([data])
+	return <div>{newArr.map()}</div>
+
+2. 
+34:33  Error: React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+35:31  Error: React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+40:18  Error: React Hook "useFormik" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+63:3  Error: React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+3.
+Form submission canceled because the form is not connected
+
+4. 
+cannot render the data stored in local storage
+
+5.
+private router

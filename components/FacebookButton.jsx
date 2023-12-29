@@ -3,7 +3,7 @@ import { FaFacebookSquare } from "react-icons/fa";
 function FacebookButton({ onClick }) {
   return (
     <button
-      type="submit"
+      type="button"
       onClick={onClick}
       className=" relative border w-full flex justify-center gap-10 items-center border-gray-300  p-4 rounded text-white bg-[#0165E1]"
     >

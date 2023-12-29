@@ -12,7 +12,9 @@ import InputRepliesCard from "./InputRepliesCard";
 import Updatebutton from "./Updatebutton";
 import RepliesCommentsReply from "./RepliesCommentsReply";
 import Image from "next/image";
-function ReplyCard({ i, j, newArr, setNewArr }) {
+import { useCommentsStore } from "@/stores/commentsStore";
+
+function ReplyCard({ i, j, comment }) {
   const [click, setClick] = useState(false);
   const { user } = useAuthContext();
   const [deleteModal, setDeleteModal] = useState(false);
@@ -22,6 +24,10 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
   const [buttonValue, setButtonValue] = useState("");
   const username = user && user.email?.slice(0, 1).toUpperCase();
   const userId = user && user.email ? user.email.slice(0, 7) : "";
+  const [editReply, comments] = useCommentsStore((state) => [
+    state.editReply,
+    state.comments,
+  ]);
 
   const formik = useFormik({
     initialValues: {
@@ -40,7 +46,7 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
   };
 
   const editButton = (val) => {
-    setButtonValue(val.content);
+    // setButtonValue(val.content);
 
     setEditInput(true);
     setCloseEdit(false);
@@ -60,6 +66,7 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
     });
 
     setNewArr(arr);
+    localStorage.setItem("comments", JSON.stringify(arr));
     setCloseEdit(true);
   };
 
@@ -78,6 +85,7 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
     });
 
     setNewArr(updatedArr);
+    localStorage.setItem("comments", JSON.stringify(updatedArr));
     setDeleteModal(false);
 
     // console.log(reply);
@@ -122,15 +130,18 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
   };
 
   useEffect(() => {
+    let localComment = localStorage.getItem("comments");
+    // setNewArr(JSON.parse(localComment));
+
     const localVote = JSON.parse(localStorage.getItem(localStorageKey));
     if (localVote != null) {
       setVote(localVote);
     }
-  }, []);
+  }, [localStorageKey]);
 
   return (
     <>
-      <div className="bg-white rounded-lg mb-5 flex justify-center items-start gap-10 p-8  w-full">
+      <div className="bg-white rounded-lg  flex justify-center items-start gap-10 p-8  w-full">
         <div className=" hidden sm:flex flex-col  gap-1 items-center justify-center text-[#5457b6] font-bold bg-[#f5f6fa] p-3 rounded-lg">
           <button
             className="font-bold text-gray-400"
@@ -182,7 +193,11 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
                       handleDeleteModal();
                     }}
                   />
-                  <EditButton onClick={() => editButton(i)} />
+                  <EditButton
+                    onClick={() => {
+                      editButton();
+                    }}
+                  />
                 </div>
               )}
             </div>
@@ -209,7 +224,12 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
                   // required
                 ></textarea>
                 <div className="flex justify-end mt-3">
-                  <Updatebutton onClick={() => updateButton()} />
+                  <Updatebutton
+                    onClick={() => {
+                      editReply(i.id, formik.values.content);
+                      setEditInput(false);
+                    }}
+                  />
                 </div>
               </form>
             ) : (
@@ -254,11 +274,12 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
           <ReplyDeleteModal
             i={i}
             handleDeleteModal={handleDeleteModal}
-            replyRemoveButton={replyRemoveButton}
+            setDeleteModal={setDeleteModal}
+            // replyRemoveButton={replyRemoveButton}
           />
         ) : null}
       </div>
-      {i.reply !== null && typeof i.reply !== "undefined"
+      {/* {i.reply !== null && typeof i.reply !== "undefined"
         ? i.reply.map((i, index) => {
             return (
               // <<div className="bg-green-100" key={index}>
@@ -274,13 +295,12 @@ function ReplyCard({ i, j, newArr, setNewArr }) {
               />
             );
           })
-        : null}
+        : null} */}
       {click ? <InputReplyCard /> : null}
       {clickRepliresCard ? (
         <InputRepliesCard
           i={i}
-          newArr={newArr}
-          setNewArr={setNewArr}
+          comment={comment}
           setClickReplicesCard={setClickReplicesCard}
         />
       ) : null}

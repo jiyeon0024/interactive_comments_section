@@ -143,7 +143,7 @@ function RepliesCommentsReply({ i, index, newArr, setNewArr }) {
     if (localVote != null) {
       setVote(localVote);
     }
-  }, []);
+  }, [localStorageKey]);
 
   return (
     <>

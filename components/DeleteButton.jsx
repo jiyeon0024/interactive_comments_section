@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
-function EditButton({ onClick }) {
+function DeleteButton({ onClick }) {
   const [hover, setHover] = useState(false);
-
   return (
     <div
       onClick={onClick}
@@ -11,30 +10,35 @@ function EditButton({ onClick }) {
     >
       {hover ? (
         <button
-          type="submit"
           onClick={onClick}
           className="flex justify-center items-center gap-3"
         >
           <Image
-            src="./images/icon-editHover.svg"
             width={10}
             height={10}
+            src="./images/icon-deleteHover.svg"
             alt=""
+            className="w-auto h-auto"
           />
-          <span className="font-bold text-[#c3c4ef]">Edit</span>
+          <span className="font-bold text-[#ffb8bb]">Delete</span>
         </button>
       ) : (
         <button
-          type="submit"
           onClick={onClick}
           className="flex justify-center items-center gap-3"
         >
-          <Image src="./images/icon-edit.svg" alt="" width={10} height={10} />
-          <span className="font-bold text-[#5457b6]">Edit</span>
+          <Image
+            width={10}
+            height={10}
+            src="./images/icon-delete.svg"
+            alt=""
+            className="w-auto h-auto"
+          />
+          <span className="font-bold text-[#ed6468] ">Delete</span>
         </button>
       )}
     </div>
   );
 }
 
-export default EditButton;
+export default DeleteButton;

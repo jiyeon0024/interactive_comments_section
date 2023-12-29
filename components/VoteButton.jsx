@@ -29,7 +29,7 @@ function VoteButton({ index }) {
     if (localVote != null) {
       setVote(localVote);
     }
-  }, []);
+  }, [localStorageKey]);
   return (
     <div className="flex-row flex sm:flex-col sm:gap-1 gap-2 items-center justify-center text-[#5457b6] font-bold bg-[#f5f6fa] p-3 rounded-lg">
       <button

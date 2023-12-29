@@ -12,7 +12,8 @@ import Updatebutton from "./Updatebutton";
 import { useFormik } from "formik";
 import { editValidator } from "../util/validationSchema";
 import Image from "next/image";
-function CommentsCard({ newArr, setNewArr, i, index }) {
+import { useCommentsStore } from "@/stores/commentsStore";
+function CommentsCard({ newArr, setNewArr, comment, index }) {
   const { user } = useAuthContext();
   const username =
     user && user.email ? user.email.slice(0, 1).toUpperCase() : "";
@@ -25,10 +26,10 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
   const [buttonValue, setButtonValue] = useState("");
   //   const [formikval, setFormikVal] = useState("");
   const [closeEdit, setCloseEdit] = useState(false);
-
+  const [editComment] = useCommentsStore((state) => [state.editComment]);
   const formik = useFormik({
     initialValues: {
-      content: i?.content,
+      content: comment?.content,
     },
     validationSchema: editValidator,
     onSubmit: (values) => {
@@ -60,15 +61,15 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
     }
   };
 
-  const removeButton = (val) => {
-    let filtered = newArr.filter((i) => val !== i);
-    setNewArr(filtered);
-    setDeleteModal(false);
-  };
+  // const removeButton = () => {
+  // let filtered = newArr.filter((i) => val !== i);
+  // setNewArr(filtered);
+  // setDeleteModal(false);
+  // localStorage.setItem("comments", JSON.stringify(filtered));
+  // removeReply(i.id);
+  // };
 
   const editButton = (val) => {
-    setButtonValue(val.content);
-
     setEditInput(true);
     setCloseEdit(false);
   };
@@ -82,6 +83,7 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
       return i;
     });
     setNewArr(arr);
+    localStorage.setItem("comments", JSON.stringify(arr));
 
     setCloseEdit(true);
   };
@@ -91,14 +93,14 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
       <div className="flex flex-col gap-5 w-full h-full  ">
         <div className="bg-white rounded-lg  flex justify-center items-start gap-10 p-8 w-full h-full ">
           <div className="sm:flex flex-col items-center justify-center  hidden  ">
-            <VoteButton index={index} />
+            <VoteButton index={comment.id} />
           </div>
           <div className="flex flex-col gap-3 w-full">
             <div className="flex justify-between items-center gap-3">
               <div className="flex  items-center gap-3">
-                {i.user?.image?.png ? (
+                {comment.user?.image?.png ? (
                   <Image
-                    src={i.user?.image?.png}
+                    src={comment.user?.image?.png}
                     alt=""
                     className="w-10"
                     width={100}
@@ -109,21 +111,23 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
                     {username}
                   </div>
                 )}
-                {i?.user?.username ? (
-                  <p className="font-bold">{i?.user?.username}</p>
+                {comment?.user?.username ? (
+                  <p className="font-bold">{comment.user?.username}</p>
                 ) : (
                   <p className="font-bold">{userId}</p>
                 )}
-                {i.createdAt ? (
-                  <p className="text-gray-400 font-semibold">{i.createdAt}</p>
+                {comment.createdAt ? (
+                  <p className="text-gray-400 font-semibold">
+                    {comment.createdAt}
+                  </p>
                 ) : (
                   <p className="text-gray-400 font-semibold">Today</p>
                 )}
               </div>
 
-              {i.id === 1 || i.id == 2 ? (
+              {comment.id === 1 || comment.id == 2 ? (
                 <div className="hidden sm:block">
-                  <ReplyButton onClick={() => handleClick(i)} />
+                  <ReplyButton onClick={() => handleClick(comment)} />
                 </div>
               ) : (
                 <div className="sm:flex gap-3 hidden  ">
@@ -133,7 +137,7 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
                       handleDeleteModal();
                     }}
                   />
-                  <EditButton onClick={() => editButton(i)} />
+                  <EditButton onClick={() => editButton(comment)} />
                 </div>
               )}
             </div>
@@ -158,19 +162,24 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
                     // required
                   ></textarea>
                   <div className="flex justify-end mt-3">
-                    <Updatebutton onClick={() => updateButton()} />
+                    <Updatebutton
+                      onClick={() => {
+                        editComment(comment.id, formik.values.content);
+                        setEditInput(false);
+                      }}
+                    />
                   </div>
                 </form>
               ) : (
                 <p className="text-gray-600 w-full  break-words ">
-                  {i.content}
+                  {comment.content}
                 </p>
               )}
               <div className=" pt-5 sm:pt-0 flex justify-between items-center sm:hidden">
                 <VoteButton index={index} />{" "}
-                {i.id === 1 || i.id == 2 ? (
+                {comment.id === 1 || comment.id == 2 ? (
                   <div className="block sm:hidden">
-                    <ReplyButton onClick={() => handleClick(i)} />
+                    <ReplyButton onClick={() => handleClick(comment)} />
                   </div>
                 ) : (
                   <div className="sm:hidden gap-3 flex ">
@@ -180,41 +189,31 @@ function CommentsCard({ newArr, setNewArr, i, index }) {
                         handleDeleteModal();
                       }}
                     />
-                    <EditButton onClick={() => editButton(i)} />
+                    <EditButton
+                      onClick={() =>
+                        editComment(comment.id, formik.values.content)
+                      }
+                    />
                   </div>
                 )}
               </div>
             </div>
           </div>
           {deleteModal ? (
-            <DeleteModal
-              handleDeleteModal={handleDeleteModal}
-              removeButton={removeButton}
-              i={i}
-            />
+            <DeleteModal handleDeleteModal={handleDeleteModal} i={comment} />
           ) : null}
         </div>
         {click ? (
           <InputReplyCard
-            id={i.id}
-            newArr={newArr}
-            setNewArr={setNewArr}
+            id={comment.id}
             setClick={setClick}
-            i={i}
+            comment={comment}
           />
         ) : null}
-        <div className="  w-full  flex justify-end  ">
-          <div className=" w-[95%] flex  flex-col items-end   border-l-2 border-gray-200 pl-3 sm:pl-6  ">
-            {i.replies?.map((i, j) => {
-              return (
-                <ReplyCard
-                  j={j}
-                  i={i}
-                  key={j}
-                  newArr={newArr}
-                  setNewArr={setNewArr}
-                />
-              );
+        <div className="  w-full  flex justify-end   ">
+          <div className=" w-[95%] flex  flex-col items-end  gap-5  border-l-2 border-gray-200 pl-3 sm:pl-6  ">
+            {comment.replies?.map((i, j) => {
+              return <ReplyCard j={j} comment={comment} i={i} key={j} />;
             })}
           </div>
         </div>

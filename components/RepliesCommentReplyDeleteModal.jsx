@@ -15,7 +15,7 @@ function RepliesCommentReplyDeleteModal({
           </h1>
           <p className="text-gray-600 pb-3 w-[32ch] max-w-[100%]">
             Are you sure you want to delete this comment? This will remove the
-            comment and can`&#39;`t be undone.
+            comment and can&#39;t be undone.
           </p>
           <div className="flex gap-3 pb-3 w-full ">
             <NoCancelBtn onClick={handleDeleteModal} />
