@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { useEffect } from "react";
+import Loading from "@/components/Loading";
 const Layout = ({ children }) => {
   const { loggedIn } = useAuthContext();
   const router = useRouter();
@@ -16,7 +17,13 @@ const Layout = ({ children }) => {
     setLoading(false);
   }, []);
 
-  return loading ? <p>LOADING</p> : <div>{children}</div>;
+  return loading ? (
+    <div className="flex justify-center items-center h-screen">
+      <Loading />
+    </div>
+  ) : (
+    <div>{children}</div>
+  );
 };
 
 export default Layout;
